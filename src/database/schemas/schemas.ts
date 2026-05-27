@@ -5,7 +5,7 @@ export const skills = pgTable('skills', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
   imageUrl: text('imageUrl').notNull(),
-  hexColor: varchar('hexColor', { length: 20 }).notNull()
+  hexColor: varchar('hexColor', { length: 15 }).notNull()
 })
 
 export const mainSkills = pgTable('mainSkills', {

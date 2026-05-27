@@ -1,5 +1,6 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { SkillsService } from './skills.service';
+import { createSkillDTO } from './dto/createSkill.dto';
 
 @Controller('skills')
 export class SkillsController {
@@ -9,6 +10,14 @@ export class SkillsController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async getSkills() {
-    return this.skillsService.getSkills()
+    return await this.skillsService.getSkills()
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async createSkill(
+    @Body() body: createSkillDTO 
+  ) {
+    return await this.skillsService.createSkill(body)
   }
 }

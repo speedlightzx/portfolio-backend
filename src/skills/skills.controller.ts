@@ -1,6 +1,7 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { SkillsService } from './skills.service';
 import { createSkillDTO } from './dto/createSkill.dto';
+import { updateSkillDTO } from './dto/updateSkill.dto';
 
 @Controller('skills')
 export class SkillsController {
@@ -19,5 +20,20 @@ export class SkillsController {
     @Body() body: createSkillDTO 
   ) {
     return await this.skillsService.createSkill(body)
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteSkill(@Param('id', ParseIntPipe) id: number) {
+    return await this.skillsService.deleteSkill(id)
+  }
+
+  @Put(':id')
+  @HttpCode(204)
+  async updateSkill(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: updateSkillDTO
+  ) {
+    return await this.skillsService.updateSkill(id, body)
   }
 }

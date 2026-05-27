@@ -5,7 +5,7 @@ export const skills = pgTable('skills', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
   imageUrl: text('imageUrl').notNull(),
-  hexColor: varchar('hexColor', { length: 15 }).notNull()
+  hexColor: varchar('hexColor', { length: 20 }).notNull()
 })
 
 export const mainSkills = pgTable('mainSkills', {
@@ -43,10 +43,17 @@ export const projectsRelations = relations(projects, ({ many }) => ({
 }))
 
 export const skillsRelations = relations(skills, ({ many }) => ({
-  projects: many(projectTechnologies)
+  technologies: many(projectTechnologies)
 }))
 
 export const projectTechonologiesRelations = relations(projectTechnologies, ({ one }) => ({
   projects: one(projects, { fields: [projectTechnologies.projectId], references: [projects.id] }),
   skills: one(skills, { fields: [projectTechnologies.skillId], references: [skills.id] })
+}))
+
+export const mainSkillsRelations = relations(mainSkills, ({ one }) => ({
+  skills: one(skills, {
+    fields: [mainSkills.skillId],
+    references: [skills.id]
+  })
 }))

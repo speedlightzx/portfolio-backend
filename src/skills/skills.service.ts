@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Inject, Injectable, InternalSer
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../database/schemas/schemas';
 import { createSkillDTO } from './dto/createSkill.dto';
-import { ilike } from 'drizzle-orm';
+import { eq, ilike } from 'drizzle-orm';
 
 @Injectable()
 export class SkillsService {
@@ -13,8 +13,17 @@ export class SkillsService {
   ) {}
 
   async getSkills() {
-    const skillsResult = this.db.query.skills.findMany()
-    const mainSkillsResult = this.db.query.mainSkills.findMany()
+    const skillsResult = this.db
+    .select()
+    .from(schema.skills)
+
+    const mainSkillsResult = this.db
+    .select({
+      whatSolves: schema.mainSkills.whatSolves,
+      name: schema.skills.name,
+    })
+    .from(schema.skills)
+    .innerJoin(schema.mainSkills, eq(schema.skills.id, schema.mainSkills.skillId))
     
     const [skills, mainSkills] = await Promise.all([
       skillsResult,
@@ -25,8 +34,6 @@ export class SkillsService {
   }
 
   async createSkill(dto: createSkillDTO) {
-    if(!dto.imageUrl.startsWith('https://')) throw new BadRequestException('Insira um link válido para poder usar de imagem.')
-    if(dto.hexColor.startsWith('#')) throw new BadRequestException('Por favor remova o "#" do hexColor, não é necessário.')
     if(dto.isMainSkill && !dto.whatSolves) throw new BadRequestException('Você precisa especificar o que essa skill técnica resolve.')
     if(dto.whatSolves && !dto.isMainSkill) throw new BadRequestException('Apenas skills principais podem ter o texto de que problema resolve.')
   

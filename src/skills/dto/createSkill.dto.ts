@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUrl, Length } from "class-validator";
+import { IsBoolean, IsHexColor, IsNotEmpty, IsOptional, IsString, IsUrl, Length } from "class-validator";
 
 export class createSkillDTO {
 
@@ -13,8 +13,7 @@ export class createSkillDTO {
     imageUrl!:string
 
     @IsNotEmpty()
-    @Length(1, 20)
-    @IsString()
+    @IsHexColor()
     hexColor!:string
 
     @IsOptional()

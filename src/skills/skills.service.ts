@@ -83,8 +83,7 @@ export class SkillsService {
 
   async updateSkill(id:number, dto:updateSkillDTO) {
     if(dto.hexColor && dto.hexColor.startsWith('#')) throw new BadRequestException('Por favor, remova o "#" do hex color.')
-    if(dto.isMainSkill && !dto.whatSolves) throw new BadRequestException('Você precisa especificar o que essa skill técnica resolve.')
-    if(dto.whatSolves && !dto.isMainSkill) throw new BadRequestException('Apenas skills principais podem ter o texto de que problema resolve.')
+    if(dto.isMainSkill == false && dto.whatSolves) throw new BadRequestException('Apenas skills principais podem ter o texto de que problema resolve.')
 
     const [foundSkill] = await this.db
     .select()
@@ -93,6 +92,44 @@ export class SkillsService {
     .leftJoin(schema.mainSkills, eq(schema.skills.id, schema.mainSkills.skillId))
 
     if(!foundSkill) throw new NotFoundException(`Skill com id ${id} não encontrada.`)
-    console.log(foundSkill)
+    if((dto.isMainSkill || foundSkill.mainSkills?.skillId == foundSkill.skills.id) && !dto.whatSolves && dto.isMainSkill !== false) throw new BadRequestException('Você precisa especificar o que essa skill técnica resolve.')
+
+
+    if(dto.name || dto.hexColor || dto.imageUrl) {
+      await this.db
+      .update(schema.skills)
+      .set({
+        name: dto.name,
+        hexColor: dto.hexColor,
+        imageUrl: dto.imageUrl
+      })
+      .where(eq(schema.skills.id, id))
+    }
+
+    if((dto.isMainSkill || foundSkill.mainSkills?.skillId == foundSkill.skills.id) && dto.whatSolves) {
+      if(foundSkill.mainSkills) {
+        await this.db
+        .update(schema.mainSkills)
+        .set({
+          whatSolves: dto.whatSolves
+        })
+        .where(eq(schema.mainSkills.skillId, id))
+
+        return
+      }
+
+      await this.db
+      .insert(schema.mainSkills)
+      .values({
+        skillId: id,
+        whatSolves: dto.whatSolves
+      })
+    }
+
+    if(dto.isMainSkill == false) {
+      await this.db
+      .delete(schema.mainSkills)
+      .where(eq(schema.mainSkills.skillId, id))
+    }
   }
 }

@@ -12,7 +12,9 @@ export const mainSkills = pgTable('mainSkills', {
   id: serial('id')
     .primaryKey(),
   skillId: integer('skill_id')
-    .references(() => skills.id),
+    .references(() => skills.id, {
+      onDelete: 'cascade'
+    }),
   whatSolves: varchar('whatSolves', { length: 100 })
     .notNull()
 })
@@ -43,10 +45,17 @@ export const projectsRelations = relations(projects, ({ many }) => ({
 }))
 
 export const skillsRelations = relations(skills, ({ many }) => ({
-  projects: many(projectTechnologies)
+  technologies: many(projectTechnologies)
 }))
 
 export const projectTechonologiesRelations = relations(projectTechnologies, ({ one }) => ({
   projects: one(projects, { fields: [projectTechnologies.projectId], references: [projects.id] }),
   skills: one(skills, { fields: [projectTechnologies.skillId], references: [skills.id] })
+}))
+
+export const mainSkillsRelations = relations(mainSkills, ({ one }) => ({
+  skills: one(skills, {
+    fields: [mainSkills.skillId],
+    references: [skills.id]
+  })
 }))

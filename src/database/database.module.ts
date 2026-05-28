@@ -7,7 +7,7 @@ const DatabaseProvider = {
   provide: 'db',
   useFactory: () => {
     const client = new Pool({
-      connectionString: process.env.DATABASE_URL!
+      connectionString: process.env.CONNECTION_STRING_DB_URL!
     })
     return drizzle(client, { schema })
   }

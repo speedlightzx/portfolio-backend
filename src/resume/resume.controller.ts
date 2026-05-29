@@ -13,7 +13,7 @@ export class ResumeController {
     @HttpCode(204)
     @UseInterceptors(FileInterceptor('file'))
     async postResume(
-        @UploadedFile() file: File
+        @UploadedFile() file: Express.Multer.File
     ) {
         return await this.resumeService.postResume(file)
     }

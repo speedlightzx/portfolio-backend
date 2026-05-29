@@ -26,7 +26,9 @@ export const projects = pgTable('projects', {
   description: text('description').notNull(),
   context: varchar('context', { length: 20 }).notNull(),
   thumbnailUrl: text('thumbnailUrl').notNull(),
-  showcaseImagesUrl: text('showcaseImagesUrl').array().default([])
+  showcaseImagesUrl: text('showcaseImagesUrl').array().default([]),
+  githubRepositoryUrl: text('githubRepositoryUrl'),
+  productionUrl: text('productionUrl')
 })
 
 export const projectTechnologies = pgTable('project_technologies', {

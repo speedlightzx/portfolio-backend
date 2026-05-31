@@ -12,6 +12,7 @@ export const mainSkills = pgTable('mainSkills', {
   id: serial('id')
     .primaryKey(),
   skillId: integer('skill_id')
+    .unique()
     .references(() => skills.id, {
       onDelete: 'cascade'
     }),

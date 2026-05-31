@@ -1,0 +1,1 @@
+ALTER TABLE "mainSkills" ADD CONSTRAINT "mainSkills_skill_id_unique" UNIQUE("skill_id");

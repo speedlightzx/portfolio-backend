@@ -7,13 +7,10 @@ import { StorageService } from '@/storage/storage.service';
 export class ResumeService {
 
     constructor(
-        @Inject('db')
-        private readonly db:NodePgDatabase<typeof schema>,
-
         private readonly storage:StorageService
     ) {}
 
-    async postResume(file:File) {
+    async updateResume(file:File) {
         if(file.type !== 'application/pdf') throw new BadRequestException('Por favor, envie apenas arquivos pdf.')
         
         try {

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { createProjectDTO } from './dto/createProject.dto';
 import { updateProjectDTO } from './dto/updateProject.dto';
@@ -30,5 +30,13 @@ export class ProjectsController {
         @Param('id', ParseIntPipe) id: number
     ) {
         return await this.projectsService.updateProject(body, id)
+    }
+
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteProject(
+        @Param('id', ParseIntPipe) id: number
+    ) {
+        return await this.projectsService.deleteProject(id)
     }
 }

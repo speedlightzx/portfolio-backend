@@ -79,7 +79,6 @@ export class ProjectsService {
     }
 
     async updateProject(dto: updateProjectDTO, projectId:number) {
-
         const [findProject] = await this.db
         .select()
         .from(schema.projects)
@@ -138,5 +137,14 @@ export class ProjectsService {
             }
 
         })
+    }
+
+    async deleteProject(id:number) {
+        const deletedProject = await this.db
+        .delete(schema.projects)
+        .where(eq(schema.projects.id, id))
+        .returning()
+
+        if(deletedProject.length == 0) throw new NotFoundException(`Projeto com id ${id} não encontrado.`)
     }
 }

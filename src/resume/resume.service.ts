@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable, InternalServerErrorException }
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../database/schemas/schemas';
 import { StorageService } from '@/storage/storage.service';
+import { Multer } from 'multer';
 
 @Injectable()
 export class ResumeService {
@@ -10,8 +11,9 @@ export class ResumeService {
         private readonly storage:StorageService
     ) {}
 
-    async updateResume(file:File) {
-        if(file.type !== 'application/pdf') throw new BadRequestException('Por favor, envie apenas arquivos pdf.')
+    async postResume(file:Express.Multer.File) {
+        if(!file) throw new BadRequestException('Por favor, envie o seu currículo como arquivo pdf.')
+        if(file.mimetype != 'application/pdf') throw new BadRequestException('Por favor, envie apenas arquivos pdf.')
         
         try {
             await this.storage.uploadResume(file) 

@@ -12,6 +12,7 @@ export const mainSkills = pgTable('mainSkills', {
   id: serial('id')
     .primaryKey(),
   skillId: integer('skill_id')
+    .unique()
     .references(() => skills.id, {
       onDelete: 'cascade'
     }),
@@ -26,7 +27,9 @@ export const projects = pgTable('projects', {
   description: text('description').notNull(),
   context: varchar('context', { length: 20 }).notNull(),
   thumbnailUrl: text('thumbnailUrl').notNull(),
-  showcaseImagesUrl: text('showcaseImagesUrl').array()
+  showcaseImagesUrl: text('showcaseImagesUrl').array().default([]),
+  githubRepositoryUrl: text('githubRepositoryUrl'),
+  productionUrl: text('productionUrl')
 })
 
 export const projectTechnologies = pgTable('project_technologies', {
@@ -35,7 +38,9 @@ export const projectTechnologies = pgTable('project_technologies', {
     .references(() => skills.id),
   projectId: integer('project_id')
     .notNull()
-    .references(() => projects.id)
+    .references(() => projects.id, {
+      onDelete: 'cascade'
+    }),
 }, (table) => ({
   pk: primaryKey({ columns: [table.projectId, table.skillId] }),
 }))

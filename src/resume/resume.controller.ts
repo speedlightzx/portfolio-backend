@@ -15,6 +15,6 @@ export class ResumeController {
     async postResume(
         @UploadedFile() file: Express.Multer.File
     ) {
-        return await this.resumeService.postResume(file)
+        return await this.resumeService.updateResume(file)
     }
 }

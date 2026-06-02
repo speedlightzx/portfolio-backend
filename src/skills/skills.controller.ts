@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { SkillsService } from './skills.service';
 import { createSkillDTO } from './dto/createSkill.dto';
 import { updateSkillDTO } from './dto/updateSkill.dto';
+import { AuthGuard } from '@/auth/auth.guard';
 
 @Controller('skills')
 export class SkillsController {
@@ -16,6 +17,7 @@ export class SkillsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard)
   async createSkill(
     @Body() body: createSkillDTO 
   ) {
@@ -24,12 +26,14 @@ export class SkillsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard)
   async deleteSkill(@Param('id', ParseIntPipe) id: number) {
     return await this.skillsService.deleteSkill(id)
   }
 
   @Put(':id')
   @HttpCode(204)
+  @UseGuards(AuthGuard)
   async updateSkill(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: updateSkillDTO

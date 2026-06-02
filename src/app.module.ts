@@ -4,9 +4,21 @@ import { SkillsModule } from './skills/skills.module';
 import { ResumeModule } from './resume/resume.module';
 import { StorageModule } from './storage/storage.module';
 import { ProjectsModule } from './projects/projects.module';
+import { AuthModule } from './auth/auth.module';
 import 'dotenv/config'
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule, SkillsModule, ResumeModule, StorageModule, ProjectsModule],
+  imports: [
+    DatabaseModule, 
+    SkillsModule, 
+    ResumeModule, 
+    StorageModule, 
+    ProjectsModule, 
+    AuthModule, 
+    ConfigModule.forRoot({
+      isGlobal: true
+  })
+  ],
 })
 export class AppModule {}

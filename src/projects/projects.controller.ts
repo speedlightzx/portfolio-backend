@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { createProjectDTO } from './dto/createProject.dto';
 import { updateProjectDTO } from './dto/updateProject.dto';
+import { AuthGuard } from '@/auth/auth.guard';
 
 @Controller('projects')
 export class ProjectsController {
@@ -17,6 +18,7 @@ export class ProjectsController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @UseGuards(AuthGuard)
     async createProject(
         @Body() body: createProjectDTO
     ) {
@@ -25,6 +27,7 @@ export class ProjectsController {
 
     @Put(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @UseGuards(AuthGuard)
     async updateProject(
         @Body() body: updateProjectDTO,
         @Param('id', ParseIntPipe) id: number
@@ -34,6 +37,7 @@ export class ProjectsController {
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
+    @UseGuards(AuthGuard)
     async deleteProject(
         @Param('id', ParseIntPipe) id: number
     ) {

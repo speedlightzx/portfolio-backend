@@ -22,6 +22,7 @@ export class SkillsService {
     .select({
       whatSolves: schema.mainSkills.whatSolves,
       name: schema.skills.name,
+      hexColor: schema.skills.hexColor
     })
     .from(schema.skills)
     .innerJoin(schema.mainSkills, eq(schema.skills.id, schema.mainSkills.skillId))
@@ -38,7 +39,8 @@ export class SkillsService {
     if(dto.hexColor.startsWith('#')) throw new BadRequestException('Por favor, remova o "#" do hex color.')
     if(dto.isMainSkill && !dto.whatSolves) throw new BadRequestException('Você precisa especificar o que essa skill técnica resolve.')
     if(dto.whatSolves && !dto.isMainSkill) throw new BadRequestException('Apenas skills principais podem ter o texto de que problema resolve.')
-  
+    if(!dto.isMainSkill && dto.hexColor) throw new BadRequestException('Apenas skills principais podem ter cores.')
+
     const skillAlreadyExists = await this.db.query.skills.findFirst({
       where: ilike(schema.skills.name, dto.name)
     })
@@ -84,6 +86,7 @@ export class SkillsService {
   async updateSkill(id:number, dto:updateSkillDTO) {
     if(dto.hexColor && dto.hexColor.startsWith('#')) throw new BadRequestException('Por favor, remova o "#" do hex color.')
     if(dto.isMainSkill == false && dto.whatSolves) throw new BadRequestException('Apenas skills principais podem ter o texto de que problema resolve.')
+    if(dto.isMainSkill == false && dto.hexColor) throw new BadRequestException('Apenas skills principais podem ter cores.')
 
     const [foundSkill] = await this.db
     .select()

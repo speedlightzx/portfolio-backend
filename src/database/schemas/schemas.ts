@@ -1,4 +1,8 @@
 import { relations } from 'drizzle-orm';
+import { pgEnum } from 'drizzle-orm/pg-core';
+import { timestamp } from 'drizzle-orm/pg-core';
+import { numeric } from 'drizzle-orm/pg-core';
+import { uuid } from 'drizzle-orm/pg-core';
 import { integer, pgTable, primaryKey, serial, text, varchar } from 'drizzle-orm/pg-core';
 
 export const skills = pgTable('skills', {
@@ -29,7 +33,32 @@ export const projects = pgTable('projects', {
   thumbnailUrl: text('thumbnailUrl').notNull(),
   showcaseImagesUrl: text('showcaseImagesUrl').array().default([]),
   githubRepositoryUrl: text('githubRepositoryUrl'),
-  productionUrl: text('productionUrl')
+  productionUrl: text('productionUrl'),
+  orderPriority: integer('orderPriority').default(0)
+})
+
+export const orderType = pgEnum('order_type', [
+  'One time',
+  'Monthly'
+])
+
+export const orderPaid = pgEnum('order_paid', [
+  'Paid',
+  'Unpaid'
+])
+
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  uuid: uuid('uuid').unique().notNull(),
+  client_name: varchar('client_name', { length: 100 }).notNull(),
+  description: varchar('description', { length: 255 }),
+  price: numeric('price', {
+    precision: 10,
+    scale: 2
+  }).notNull(),
+  type: orderType('type').notNull(),
+  paid: orderPaid('paid').default('Unpaid'),
+  createdAt: timestamp('created_at').defaultNow().notNull()
 })
 
 export const projectTechnologies = pgTable('project_technologies', {
@@ -41,6 +70,7 @@ export const projectTechnologies = pgTable('project_technologies', {
     .references(() => projects.id, {
       onDelete: 'cascade'
     }),
+  orderPriority: integer('orderPriority').default(0)
 }, (table) => ({
   pk: primaryKey({ columns: [table.projectId, table.skillId] }),
 }))

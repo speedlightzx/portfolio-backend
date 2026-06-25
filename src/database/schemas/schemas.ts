@@ -54,7 +54,15 @@ export const orders = pgTable('orders', {
   }).notNull(),
   type: orderType('type').notNull(),
   paid: orderPaid('paid').default(orderPaidEnum.Unpaid),
-  createdAt: timestamp('created_at').defaultNow().notNull()
+  createdAt: timestamp('created_at', {
+    withTimezone: true
+  })
+  .defaultNow(),
+  updatedAt: timestamp('updated_at', { 
+    withTimezone: true 
+  })
+  .defaultNow()
+  .$onUpdate(() => new Date())
 })
 
 export const projectTechnologies = pgTable('project_technologies', {

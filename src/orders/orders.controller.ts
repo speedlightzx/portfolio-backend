@@ -1,6 +1,7 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { createOrderDTO } from './dto/createOrder.dto';
 import { OrdersService } from './orders.service';
+import { AuthGuard } from '@/auth/auth.guard';
 
 @Controller('orders')
 export class OrdersController {
@@ -9,8 +10,15 @@ export class OrdersController {
         private readonly ordersService:OrdersService
     ) {}
 
+    @Get()
+    @UseGuards(AuthGuard)
+    async getOrders() {
+        return await this.ordersService.getOrders()
+    }
+
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @UseGuards(AuthGuard)
     async createOrder(
         @Body() body: createOrderDTO
     ) {

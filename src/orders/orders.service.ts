@@ -21,4 +21,19 @@ export class OrdersService {
             description: dto.description
         })
     }
+
+    async getOrders() {
+        return this.db
+        .select({
+            uuid: schema.orders.uuid,
+            clientName: schema.orders.client_name,
+            description: schema.orders.description,
+            price: schema.orders.price,
+            type: schema.orders.type,
+            paid: schema.orders.paid,
+            createdAt: schema.orders.createdAt,
+            updatedAt: schema.orders.updatedAt
+        })
+        .from(schema.orders)
+    }
 }

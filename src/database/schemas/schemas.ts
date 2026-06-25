@@ -1,3 +1,5 @@
+import { orderPaidEnum } from '@/orders/types/orderPaid.enum';
+import { orderTypeEnum } from '@/orders/types/orderType.enum';
 import { relations } from 'drizzle-orm';
 import { pgEnum } from 'drizzle-orm/pg-core';
 import { timestamp } from 'drizzle-orm/pg-core';
@@ -37,19 +39,13 @@ export const projects = pgTable('projects', {
   orderPriority: integer('orderPriority').default(0)
 })
 
-export const orderType = pgEnum('order_type', [
-  'One time',
-  'Monthly'
-])
+export const orderType = pgEnum('order_type', orderTypeEnum)
 
-export const orderPaid = pgEnum('order_paid', [
-  'Paid',
-  'Unpaid'
-])
+export const orderPaid = pgEnum('order_paid', orderPaidEnum)
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  uuid: uuid('uuid').unique().notNull(),
+  uuid: uuid('uuid').defaultRandom(),
   client_name: varchar('client_name', { length: 100 }).notNull(),
   description: varchar('description', { length: 255 }),
   price: numeric('price', {
@@ -57,7 +53,7 @@ export const orders = pgTable('orders', {
     scale: 2
   }).notNull(),
   type: orderType('type').notNull(),
-  paid: orderPaid('paid').default('Unpaid'),
+  paid: orderPaid('paid').default(orderPaidEnum.Unpaid),
   createdAt: timestamp('created_at').defaultNow().notNull()
 })
 

@@ -7,6 +7,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { AuthModule } from './auth/auth.module';
 import 'dotenv/config'
 import { ConfigModule } from '@nestjs/config';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule, 
     ConfigModule.forRoot({
       isGlobal: true
-  })
+  }), OrdersModule
   ],
 })
 export class AppModule {}

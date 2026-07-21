@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query, RawBody, UseGuards } from '@nestjs/common';
 import { createOrderDTO } from './dto/createOrder.dto';
 import { OrdersService } from './orders.service';
 import { AuthGuard } from '@/auth/auth.guard';
@@ -43,5 +43,22 @@ export class OrdersController {
         @Param('id', ParseIntPipe) id: number
     ) {
         return await this.ordersService.deleteOrder(id)
+    }
+
+    @Get(':uuid/pay')
+    @HttpCode(HttpStatus.OK)
+    async paidOrder(
+        @Param('uuid', ParseUUIDPipe) uuid: string
+    ) {
+        return await this.ordersService.paidOrder(uuid)
+    }
+
+    @Post('confirmPayment')
+    @HttpCode(HttpStatus.OK)
+    async confirmPayment(
+        @RawBody() rawBody: Buffer,
+        @Headers('stripe-signature') signature: string
+    ) {
+        await this.ordersService.confirmPayment(rawBody, signature)
     }
 }

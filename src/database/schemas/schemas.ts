@@ -1,6 +1,7 @@
 import { orderPaidEnum } from '@/orders/types/orderPaid.enum';
 import { orderTypeEnum } from '@/orders/types/orderType.enum';
 import { relations } from 'drizzle-orm';
+import { uniqueIndex } from 'drizzle-orm/pg-core';
 import { pgEnum } from 'drizzle-orm/pg-core';
 import { timestamp } from 'drizzle-orm/pg-core';
 import { numeric } from 'drizzle-orm/pg-core';
@@ -45,12 +46,14 @@ export const orderPaid = pgEnum('order_paid', orderPaidEnum)
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  uuid: uuid('uuid').defaultRandom(),
+  uuid: uuid('uuid').defaultRandom().notNull(),
   client_name: varchar('client_name', { length: 100 }).notNull(),
+  name: varchar('order_name', { length: 100 }).notNull(),
   description: varchar('description', { length: 255 }),
   price: numeric('price', {
     precision: 10,
-    scale: 2
+    scale: 2,
+    mode: 'number'
   }).notNull(),
   type: orderType('type').notNull(),
   paid: orderPaid('paid').default(orderPaidEnum.Unpaid),
@@ -63,7 +66,9 @@ export const orders = pgTable('orders', {
   })
   .defaultNow()
   .$onUpdate(() => new Date())
-})
+}, (table) => [
+  uniqueIndex('orderUuid_idx').on(table.uuid)
+])
 
 export const projectTechnologies = pgTable('project_technologies', {
   skillId: integer('skill_id')

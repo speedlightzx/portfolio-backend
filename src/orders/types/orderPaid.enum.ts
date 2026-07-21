@@ -1,4 +1,5 @@
 export enum orderPaidEnum {
     Paid = 'Paid',
-    Unpaid = 'Unpaid'
+    Unpaid = 'Unpaid',
+    Pending = 'Pending'
 }

@@ -8,6 +8,10 @@ export class createOrderDTO {
     client_name
 
     @IsString()
+    @Length(1, 100)
+    name
+
+    @IsString()
     @MaxLength(255)
     @IsOptional()
     description

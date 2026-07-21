@@ -1,16 +1,21 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from "@schemas"
 import { createOrderDTO } from './dto/createOrder.dto';
 import { updateOrderDTO } from './dto/updateOrder.dto';
 import { eq } from 'drizzle-orm';
+import { orderPaidEnum } from './types/orderPaid.enum';
+import { StripeService } from '@/stripe/stripe.service';
+import { Event } from 'stripe';
 
 @Injectable()
 export class OrdersService {
 
     constructor(
         @Inject('db')
-        private readonly db:NodePgDatabase<typeof schema>
+        private readonly db:NodePgDatabase<typeof schema>,
+
+        private readonly stripeService:StripeService
     ) {}
 
     async createOrder(dto:createOrderDTO) {
@@ -20,7 +25,8 @@ export class OrdersService {
             client_name: dto.client_name,
             price: dto.price,
             type: dto.type,
-            description: dto.description
+            name: dto.name,
+            description: dto.description,
         })
     }
 
@@ -39,7 +45,8 @@ export class OrdersService {
             client_name: dto.client_name,
             description: dto.description,
             paid: dto.paid,
-            price: dto.price
+            price: dto.price,
+            name: dto.name
         })
         .where(eq(schema.orders.id, orderId))
         .returning()
@@ -53,5 +60,37 @@ export class OrdersService {
         .where(eq(schema.orders.id, orderId))
 
         if(order.length == 0) throw new NotFoundException(`Não foi encontrado nenhum pedido cadastrado com o id: ${orderId}`)
+    }
+
+    async paidOrder(orderUuid:string) {
+        const findOrder = await this.db.query.orders.findFirst({ 
+            where: eq(schema.orders.uuid, orderUuid)
+         })
+
+        if(!findOrder) throw new NotFoundException('Não foi encontrado nenhum pedido com esse UUID.')
+        if(findOrder.paid == orderPaidEnum.Paid) throw new ConflictException('Esse pedido já foi pago.')
+
+        const checkout = await this.stripeService.createCheckout(findOrder.name, Math.round(findOrder.price * 100), orderUuid)
+        return { paymentUrl: checkout.url }
+    }
+
+    async confirmPayment(body:any, signature:string) {
+        let event: Event
+
+        try {
+            event = this.stripeService.verifyWebhook(body, signature)
+        } catch(e) {
+            throw new BadRequestException('Webhook ilegítimo.')
+        }
+
+        if(event.type != 'checkout.session.completed') return
+        const uuid = event.data.object.metadata!.orderUuid
+
+        await this.db
+        .update(schema.orders)
+        .set({
+            paid: orderPaidEnum.Paid
+        })
+        .where(eq(schema.orders.uuid, uuid))
     }
 }

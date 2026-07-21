@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import 'dotenv/config'
 import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { OrdersModule } from './orders/orders.module';
     AuthModule, 
     ConfigModule.forRoot({
       isGlobal: true
-  }), OrdersModule
+  }), 
+    OrdersModule, StripeModule
   ],
 })
 export class AppModule {}

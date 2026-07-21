@@ -9,6 +9,11 @@ export class updateOrderDTO {
     client_name
 
     @IsString()
+    @Length(1, 100)
+    @IsOptional()
+    name
+
+    @IsString()
     @MaxLength(255)
     @IsOptional()
     description

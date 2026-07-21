@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["./src/*"],
-      "@schemas": ["./src/database/schemas/schemas.ts"]
+      "@schemas": ["./src/database/schemas/schemas"]
     }
   }
 }
